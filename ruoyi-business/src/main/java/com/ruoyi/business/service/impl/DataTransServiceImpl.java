@@ -33,41 +33,54 @@ public class DataTransServiceImpl implements DataTransService {
 
         int dataLength = Math.toIntExact(baseSensor.getDataLength());
 
+        /*数据数目*/
         int number = totalLengthOfData / dataLength;
         int now = 33;
 
         /*通过mac查gateway id*/
         BaseGateway baseGateway = iBaseGatewayService.selectBaseGatewayByGatewayMac(mac);
-        Long gatewayId = baseGateway.getGatewayId();
-        /*通过gateway id查找device id*/
+        /*通过设备编号查找device id*/
         BaseDevice baseDevice = iBaseDeviceService.selectBaseDeviceByDeviceCode(deviceCode);
 
 
         BizMessage bizMessage = new BizMessage(baseGateway.getGatewayId(), baseSensor.getSensorId(), new Date(startingTimeStamp), new Date(terminationOfTimestamp), Long.valueOf(frequency), baseDevice.getDeviceId());
 
-        switch (dataLength)
+        switch (dataType)
         {
-            case 1 -> {
+            /*心率 血氧饱和度*/
+            case 1,4 -> {
 
                 for (int i = 0; i < number; i++) {
                     bizMessage.setMessageValue(String.valueOf(message[now++]&0xff));
                     iBizMessageService.insertBizMessage(bizMessage);
-                    System.out.println("插入成功1");
+                    System.out.println("插入成功14");
                 }
 
             }
 
+            /*脉搏波*/
             case 2 -> {
                 for (int i = 0; i < number; i++) {
-                    bizMessage.setMessageValue(String.valueOf((float) (((message[now]&0xff)+(message[now+1]&0xff*256))/10)));
+                    bizMessage.setMessageValue(String.valueOf((message[now]&0xff)+((message[now+1]&0xff)*256)));
                     now+=2;
                     iBizMessageService.insertBizMessage(bizMessage);
                     System.out.println("插入成功2");
+                }
+            }
+
+            /*温度*/
+            case 5 -> {
+                for (int i = 0; i < number; i++) {
+                    bizMessage.setMessageValue(String.valueOf( ((float) ((message[now]&0xff)+((message[now+1]&0xff)*256))/10)));
+                    now+=2;
+                    iBizMessageService.insertBizMessage(bizMessage);
+                    System.out.println("插入成功5");
 
                 }
             }
 
-            case 6 -> {
+            /*加速度*/
+            case 3 -> {
 
                 for (int i = 0; i < number; i++) {
                     int x = (message[now] & 0xff) + ((message[now + 1] & 0xff) * 256 );
@@ -76,7 +89,7 @@ public class DataTransServiceImpl implements DataTransService {
                     now+=6;
                     bizMessage.setMessageValue("("+String.valueOf(x)+","+String.valueOf(y)+","+String.valueOf(z)+")");
                     iBizMessageService.insertBizMessage(bizMessage);
-                    System.out.println("插入成功6");
+                    System.out.println("插入成功3");
 
                 }
 
