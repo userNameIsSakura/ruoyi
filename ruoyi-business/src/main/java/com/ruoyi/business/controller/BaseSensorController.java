@@ -59,20 +59,6 @@ public class BaseSensorController extends BaseController
         util.exportExcel(response, list, "传感器信息数据");
     }
 
-/*
-    */
-/**
-     * 获取传感器信息详细信息
-     *//*
-
-    @PreAuthorize("@ss.hasPermi('business:sensor:query')")
-    @GetMapping(value = "/{sensorId}")
-    public AjaxResult getInfo(@PathVariable("sensorId") Long sensorId)
-    {
-        return AjaxResult.success(baseSensorService.selectBaseSensorBySensorId(sensorId));
-    }
-*/
-
     /**
      * 新增传感器信息
      */
