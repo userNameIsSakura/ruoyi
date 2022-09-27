@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BaseDeviceMapper">
+
+    <resultMap type="BaseDevice" id="BaseDeviceResult">
+        <result property="deviceId"    column="device_id"    />
+        <result property="deviceCode"    column="device_code"    />
+        <result property="dpId"    column="dp_id"    />
+        <result property="deviceModel"    column="device_model"    />
+        <result property="remark"    column="remark"    />
+        <result property="gatewayId"    column="gateway_id"    />
+    </resultMap>
+
+    <sql id="selectBaseDeviceVo">
+        select device_id, device_code, dp_id, device_model, remark, gateway_id from base_device
+    </sql>
+
+    <select id="selectBaseDeviceList" parameterType="BaseDevice" resultMap="BaseDeviceResult">
+        <include refid="selectBaseDeviceVo"/>
+        <where>
+            <if test="deviceCode != null  and deviceCode != ''"> and device_code = #{deviceCode}</if>
+            <if test="dpId != null "> and dp_id = #{dpId}</if>
+            <if test="deviceModel != null  and deviceModel != ''"> and device_model = #{deviceModel}</if>
+            <if test="gatewayId != null "> and gateway_id = #{gatewayId}</if>
+        </where>
+    </select>
+
+    <select id="selectBaseDeviceByGatewayId" parameterType="Long" resultMap="BaseDeviceResult">
+        <include refid="selectBaseDeviceVo"/>
+        where gateway_id = #{gatewayId}
+    </select>
+
+    <select id="selectBaseDeviceByDeviceCode" parameterType="String" resultMap="BaseDeviceResult">
+        <include refid="selectBaseDeviceVo"/>
+        where device_code = #{deviceCode}
+    </select>
+
+    <insert id="insertBaseDevice" parameterType="BaseDevice">
+        insert into base_device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">device_id,</if>
+            <if test="deviceCode != null and deviceCode != ''">device_code,</if>
+            <if test="dpId != null">dp_id,</if>
+            <if test="deviceModel != null and deviceModel != ''">device_model,</if>
+            <if test="remark != null">remark,</if>
+            <if test="gatewayId != null">gateway_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="deviceCode != null and deviceCode != ''">#{deviceCode},</if>
+            <if test="dpId != null">#{dpId},</if>
+            <if test="deviceModel != null and deviceModel != ''">#{deviceModel},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="gatewayId != null">#{gatewayId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBaseDevice" parameterType="BaseDevice">
+        update base_device
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceCode != null and deviceCode != ''">device_code = #{deviceCode},</if>
+            <if test="dpId != null">dp_id = #{dpId},</if>
+            <if test="deviceModel != null and deviceModel != ''">device_model = #{deviceModel},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="gatewayId != null">gateway_id = #{gatewayId},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteBaseDeviceByDeviceId" parameterType="Long">
+        delete from base_device where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteBaseDeviceByDeviceIds" parameterType="String">
+        delete from base_device where device_id in
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+</mapper>

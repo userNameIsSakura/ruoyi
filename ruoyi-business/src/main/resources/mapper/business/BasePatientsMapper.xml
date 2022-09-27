@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BasePatientsMapper">
+
+    <resultMap type="BasePatients" id="BasePatientsResult">
+        <result property="patientId"    column="patient_id"    />
+        <result property="name"    column="name"    />
+        <result property="gender"    column="gender"    />
+        <result property="dateofbirth"    column="dateOfBirth"    />
+        <result property="phonenumber"    column="phoneNumber"    />
+        <result property="address"    column="address"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBasePatientsVo">
+        select p.* from base_patients p
+    </sql>
+
+    <select id="selectBasePatientsList" parameterType="BasePatients" resultMap="BasePatientsResult">
+        <include refid="selectBasePatientsVo"/> ,patient_doctor r
+        <where>
+            <if test="name != null  and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+            <if test="gender != null  and gender != ''"> and p.gender = #{gender}</if>
+            <if test="dateofbirth != null "> and p.dateOfBirth = #{dateofbirth}</if>
+            <if test="phonenumber != null  and phonenumber != ''"> and p.phoneNumber = #{phonenumber}</if>
+            <if test="address != null  and address != ''"> and p.address = #{address}</if>
+            and p.patient_id = r.patient_id and r.user_id = #{loginId}
+        </where>
+    </select>
+
+    <select id="selectBasePatientsByPatientId" parameterType="Long" resultMap="BasePatientsResult">
+        <include refid="selectBasePatientsVo"/>
+        where patient_id = #{patientId}
+    </select>
+
+    <insert id="insertBasePatients" parameterType="BasePatients" useGeneratedKeys="true" keyProperty="patientId">
+        insert into base_patients
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="dateofbirth != null">dateOfBirth,</if>
+            <if test="phonenumber != null and phonenumber != ''">phoneNumber,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="gender != null and gender != ''">#{gender},</if>
+            <if test="dateofbirth != null">#{dateofbirth},</if>
+            <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBasePatients" parameterType="BasePatients">
+        update base_patients
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="gender != null and gender != ''">gender = #{gender},</if>
+            <if test="dateofbirth != null">dateOfBirth = #{dateofbirth},</if>
+            <if test="phonenumber != null and phonenumber != ''">phoneNumber = #{phonenumber},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where patient_id = #{patientId}
+    </update>
+
+    <delete id="deleteBasePatientsByPatientId" parameterType="Long">
+        delete from base_patients where patient_id = #{patientId}
+    </delete>
+
+    <delete id="deleteBasePatientsByPatientIds" parameterType="String">
+        delete from base_patients where patient_id in
+        <foreach item="patientId" collection="array" open="(" separator="," close=")">
+            #{patientId}
+        </foreach>
+    </delete>
+</mapper>

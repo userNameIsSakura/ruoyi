@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BaseSensorMapper">
+
+    <resultMap type="BaseSensor" id="BaseSensorResult">
+        <result property="sensorId"    column="sensor_id"    />
+        <result property="sensorType"    column="sensor_type"    />
+        <result property="sensorUnit"    column="sensor_unit"    />
+        <result property="sensorName"    column="sensor_name"    />
+        <result property="dataLength"    column="data_length"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBaseSensorVo">
+        select sensor_id, sensor_type, sensor_unit, sensor_name, data_length, remark from base_sensor
+    </sql>
+
+    <select id="selectBaseSensorList" parameterType="BaseSensor" resultMap="BaseSensorResult">
+        <include refid="selectBaseSensorVo"/>
+        <where>
+            <if test="sensorType != null  and sensorType != ''"> and sensor_type = #{sensorType}</if>
+            <if test="sensorUnit != null  and sensorUnit != ''"> and sensor_unit = #{sensorUnit}</if>
+            <if test="sensorName != null  and sensorName != ''"> and sensor_name like concat('%', #{sensorName}, '%')</if>
+            <if test="dataLength != null "> and data_length = #{dataLength}</if>
+        </where>
+    </select>
+
+    <select id="selectBaseSensorBySensorType" parameterType="int" resultMap="BaseSensorResult">
+        <include refid="selectBaseSensorVo"/>
+        where sensor_type = #{sensorType}
+    </select>
+
+    <insert id="insertBaseSensor" parameterType="BaseSensor">
+        insert into base_sensor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sensorId != null">sensor_id,</if>
+            <if test="sensorType != null and sensorType != ''">sensor_type,</if>
+            <if test="sensorUnit != null and sensorUnit != ''">sensor_unit,</if>
+            <if test="sensorName != null and sensorName != ''">sensor_name,</if>
+            <if test="dataLength != null">data_length,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sensorId != null">#{sensorId},</if>
+            <if test="sensorType != null and sensorType != ''">#{sensorType},</if>
+            <if test="sensorUnit != null and sensorUnit != ''">#{sensorUnit},</if>
+            <if test="sensorName != null and sensorName != ''">#{sensorName},</if>
+            <if test="dataLength != null">#{dataLength},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBaseSensor" parameterType="BaseSensor">
+        update base_sensor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sensorType != null and sensorType != ''">sensor_type = #{sensorType},</if>
+            <if test="sensorUnit != null and sensorUnit != ''">sensor_unit = #{sensorUnit},</if>
+            <if test="sensorName != null and sensorName != ''">sensor_name = #{sensorName},</if>
+            <if test="dataLength != null">data_length = #{dataLength},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where sensor_id = #{sensorId}
+    </update>
+
+    <delete id="deleteBaseSensorBySensorId" parameterType="Long">
+        delete from base_sensor where sensor_id = #{sensorId}
+    </delete>
+
+    <delete id="deleteBaseSensorBySensorIds" parameterType="String">
+        delete from base_sensor where sensor_id in
+        <foreach item="sensorId" collection="array" open="(" separator="," close=")">
+            #{sensorId}
+        </foreach>
+    </delete>
+</mapper>

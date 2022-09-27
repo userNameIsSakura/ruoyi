@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BizMessageMapper">
+
+    <resultMap type="BizMessage" id="BizMessageResult">
+        <result property="messageId"    column="message_id"    />
+        <result property="gatewayId"    column="gateway_id"    />
+        <result property="sensorId"    column="sensor_id"    />
+        <result property="messageStart"    column="message_start"    />
+        <result property="messageEnd"    column="message_end"    />
+        <result property="messageValue"    column="message_value"    />
+        <result property="messageFrequency"    column="message_frequency"    />
+        <result property="remark"    column="remark"    />
+        <result property="deviceId"    column="device_id"    />
+    </resultMap>
+
+    <sql id="selectBizMessageVo">
+        select message_id, gateway_id, sensor_id, message_start, message_end, message_value, message_frequency, remark, device_id from biz_message
+    </sql>
+
+
+    <select id="selectBizMessageList" parameterType="BizMessage" resultMap="BizMessageResult">
+        <include refid="selectBizMessageVo"/>
+        <where>
+            <if test="gatewayId != null "> and gateway_id = #{gatewayId}</if>
+            <if test="sensorId != null "> and sensor_id = #{sensorId}</if>
+            <if test="messageStart != null "> and message_start = #{messageStart}</if>
+            <if test="messageEnd != null "> and message_end = #{messageEnd}</if>
+            <if test="messageValue != null  and messageValue != ''"> and message_value = #{messageValue}</if>
+            <if test="messageFrequency != null "> and message_frequency = #{messageFrequency}</if>
+            <if test="deviceId != null "> and device_id = #{deviceId}</if>
+        </where>
+    </select>
+
+    <select id="selectBizMessageByMessageId" parameterType="Long" resultMap="BizMessageResult">
+        <include refid="selectBizMessageVo"/>
+        where message_id = #{messageId}
+    </select>
+
+    <insert id="insertBizMessage" parameterType="BizMessage" useGeneratedKeys="true" keyProperty="messageId">
+        insert into biz_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gatewayId != null">gateway_id,</if>
+            <if test="sensorId != null">sensor_id,</if>
+            <if test="messageStart != null">message_start,</if>
+            <if test="messageEnd != null">message_end,</if>
+            <if test="messageValue != null and messageValue != ''">message_value,</if>
+            <if test="messageFrequency != null">message_frequency,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deviceId != null">device_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gatewayId != null">#{gatewayId},</if>
+            <if test="sensorId != null">#{sensorId},</if>
+            <if test="messageStart != null">#{messageStart},</if>
+            <if test="messageEnd != null">#{messageEnd},</if>
+            <if test="messageValue != null and messageValue != ''">#{messageValue},</if>
+            <if test="messageFrequency != null">#{messageFrequency},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizMessage" parameterType="BizMessage">
+        update biz_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="gatewayId != null">gateway_id = #{gatewayId},</if>
+            <if test="sensorId != null">sensor_id = #{sensorId},</if>
+            <if test="messageStart != null">message_start = #{messageStart},</if>
+            <if test="messageEnd != null">message_end = #{messageEnd},</if>
+            <if test="messageValue != null and messageValue != ''">message_value = #{messageValue},</if>
+            <if test="messageFrequency != null">message_frequency = #{messageFrequency},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+        </trim>
+        where message_id = #{messageId}
+    </update>
+
+    <delete id="deleteBizMessageByMessageId" parameterType="Long">
+        delete from biz_message where message_id = #{messageId}
+    </delete>
+
+    <delete id="deleteBizMessageByMessageIds" parameterType="String">
+        delete from biz_message where message_id in
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+    </delete>
+</mapper>

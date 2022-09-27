@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BaseGatewayMapper">
+
+    <resultMap type="BaseGateway" id="BaseGatewayResult">
+        <result property="gatewayId"    column="gateway_id"    />
+        <result property="patientId"    column="patient_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="gatewayMac"    column="gateway_mac"    />
+    </resultMap>
+
+    <sql id="selectBaseGatewayVo">
+        select gateway_id, patient_id, remark, gateway_mac from base_gateway
+    </sql>
+
+    <select id="selectBaseGatewayList" parameterType="BaseGateway" resultMap="BaseGatewayResult">
+        <include refid="selectBaseGatewayVo"/>
+        <where>
+            <if test="patientId != null "> and patient_id = #{patientId}</if>
+            <if test="gatewayMac != null  and gatewayMac != ''"> and gateway_mac = #{gatewayMac}</if>
+        </where>
+    </select>
+
+    <select id="selectBaseGatewayByGatewayMac" parameterType="String" resultMap="BaseGatewayResult">
+        <include refid="selectBaseGatewayVo"/>
+        where gateway_mac = #{gatewayMac}
+    </select>
+
+    <select id="selectBaseGatewayByPatientId" parameterType="int" resultMap="BaseGatewayResult">
+        <include refid="selectBaseGatewayVo"/>
+        where patient_id = #{patientId}
+    </select>
+
+
+
+    <insert id="insertBaseGateway" parameterType="BaseGateway">
+        insert into base_gateway
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gatewayId != null">gateway_id,</if>
+            <if test="patientId != null">patient_id,</if>
+            <if test="remark != null">remark,</if>
+            <if test="gatewayMac != null and gatewayMac != ''">gateway_mac,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gatewayId != null">#{gatewayId},</if>
+            <if test="patientId != null">#{patientId},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="gatewayMac != null and gatewayMac != ''">#{gatewayMac},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBaseGateway" parameterType="BaseGateway">
+        update base_gateway
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="patientId != null">patient_id = #{patientId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="gatewayMac != null and gatewayMac != ''">gateway_mac = #{gatewayMac},</if>
+        </trim>
+        where gateway_id = #{gatewayId}
+    </update>
+
+    <delete id="deleteBaseGatewayByGatewayId" parameterType="Long">
+        delete from base_gateway where gateway_id = #{gatewayId}
+    </delete>
+
+    <delete id="deleteBaseGatewayByGatewayIds" parameterType="String">
+        delete from base_gateway where gateway_id in
+        <foreach item="gatewayId" collection="array" open="(" separator="," close=")">
+            #{gatewayId}
+        </foreach>
+    </delete>
+</mapper>
